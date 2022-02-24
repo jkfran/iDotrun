@@ -19,7 +19,10 @@ setup(
         "flake8",
         "termcolor",
         "virtualenv",
+        "nodeenv",
         "python-dotenv",
     ],
-    entry_points={"console_scripts": ["dotrun = canonicalwebteam.dotrun:cli"]},
+    entry_points={
+        "console_scripts": ["idotrun = canonicalwebteam.dotrun:cli"]
+    },
 )

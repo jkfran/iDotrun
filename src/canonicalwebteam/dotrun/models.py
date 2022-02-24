@@ -100,7 +100,6 @@ class Project:
         Install dependencies from requirements.txt and package.json,
         if there have been any changes detected
         """
-
         self._install_yarn_dependencies(force=force)
         self._install_python_dependencies(force=force)
 
@@ -172,12 +171,14 @@ class Project:
 
         result = None
 
-        if os.path.isfile(f"{self.pyenv_path}/bin/python3"):
+        if os.path.isdir(f"{self.pyenv_path}/bin"):
+            self.env.pop("PYTHONHOME", None)
             self.env["VIRTUAL_ENV"] = self.pyenv_path
             self.env["PATH"] = self.pyenv_path + "/bin:" + self.env["PATH"]
-            self.env.pop("PYTHONHOME", None)
 
-            if not os.path.isfile(f"{self.pyenv_path}/bin/python3.8"):
+            if os.path.isfile(
+                f"{self.pyenv_path}/bin/python3"
+            ) and not os.path.isfile(f"{self.pyenv_path}/bin/python3.8"):
                 self.log.note(
                     "Dotrun was updated to use Python 3.8! This project "
                     "seems to be using a previous Python environment."
@@ -268,6 +269,9 @@ class Project:
 
         changes = False
 
+        if not os.path.isfile(f"{self.pyenv_path}/bin/yarn"):
+            self._create_node_environment()
+
         if not force:
             current_state = self._get_yarn_state()
             previous_state = self.state["yarn"]
@@ -333,6 +337,23 @@ class Project:
         with open(f"{package_dir}dotrun.pth", "w+") as f:
             f.write("/snap/dotrun/current/lib/python3.8/site-packages/")
 
+    def _create_node_environment(self):
+        """
+        Create a Node environment using nodeenv
+        """
+
+        self.log.note(f"Creating Node environment: {self.pyenv_path}")
+
+        self.exec(
+            [
+                "nodeenv",
+                "--node=16.8.0",
+                self.pyenv_path,
+            ]
+        )
+
+        self.exec(["npm", "install", "--global", "yarn"])
+
     def _install_python_dependencies(self, force=False):
         """
         Install python dependencies if anything has changed
@@ -344,7 +365,7 @@ class Project:
 
         changes = False
 
-        if not os.path.isdir(self.pyenv_path):
+        if not os.path.isfile(f"{self.pyenv_path}/bin/python3"):
             self._create_python_environment()
 
         if not force:
