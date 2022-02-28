@@ -178,7 +178,7 @@ class Project:
 
             if os.path.isfile(
                 f"{self.pyenv_path}/bin/python3"
-            ) and not os.path.isfile(f"{self.pyenv_path}/bin/python3.8"):
+            ) and not os.path.isfile(f"{self.pyenv_path}/bin/python3.9"):
                 self.log.note(
                     "Dotrun was updated to use Python 3.8! This project "
                     "seems to be using a previous Python environment."
@@ -244,7 +244,7 @@ class Project:
 
         # Read package.json dependencies
         for package_json in package_jsons:
-            with open(package_json, "r") as package_contents:
+            with open(package_json, "r", encoding="utf-8") as package_contents:
                 package = json.load(package_contents)
                 packages[package["name"]] = package["version"]
 
@@ -347,6 +347,7 @@ class Project:
         self.exec(
             [
                 "nodeenv",
+                "--force",
                 "--node=16.8.0",
                 self.pyenv_path,
             ]
