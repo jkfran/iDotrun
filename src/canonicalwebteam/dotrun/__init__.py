@@ -144,18 +144,4 @@ def cli(args=None):
 
 
 if __name__ == "__main__":
-
-    if sys.platform == "darwin":
-        src = os.path.dirname(os.path.abspath(__file__)).replace(
-            "/Contents/Resources", "/Contents/Frameworks"
-        )
-        dyld_library_path = os.getenv("DYLD_LIBRARY_PATH")
-
-        if dyld_library_path:
-            os.environ[
-                "DYLD_LIBRARY_PATH"
-            ] = f"{src}{os.pathsep}{dyld_library_path}"
-        else:
-            os.environ["DYLD_LIBRARY_PATH"] = src
-
     cli()

@@ -4,29 +4,28 @@ on: [pull_request]
 jobs:
   test-mac:
     runs-on: macos-latest
-    name: Test Mac OS
+    name: Mac OS x86 build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # - uses: actions/setup-python@v2
-      #   with:
-      #     python-version: '3.8'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-      - name: Install py2app
-        run: pip3 install -U py2app
+      - name: Install pyinstaller
+        run: pip3 install -U pyinstaller
 
       - name: Build app
         run: |
           cd src/
           pip3 install .
-          python3 setup.py py2app
-          cp /usr/local/Cellar/openssl@1.1/1.1.1m/lib/libssl.1.1.dylib dist/canonicalwebteam.dotrun.app/Contents/Frameworks/
+          pyinstaller cli.py --onefile --name idotrun
 
       - uses: actions/upload-artifact@v2
         with:
-          name: dotrun-app
-          path: src/dist/canonicalwebteam.dotrun.app
+          name: idotrun
+          path: src/dist/idotrun
 
   # test-snap:
   #   runs-on: ubuntu-18.04

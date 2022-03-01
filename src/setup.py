@@ -6,27 +6,6 @@ from setuptools import setup
 # https://docs.python.org/3.6/whatsnew/3.5.html#glob
 assert sys.version_info >= (3, 5), "dotrun requires Python 3.5 or newer"
 
-extra_options = dict()
-
-if sys.platform == "darwin":
-    extra_options = dict(
-        setup_requires=["py2app"],
-        app=["canonicalwebteam/dotrun/__init__.py"],
-        options={
-            "py2app": {
-                "argv_emulation": True,
-                "packages": [
-                    "ipdb",
-                    "black",
-                    "flake8",
-                    "termcolor",
-                    "virtualenv",
-                    "nodeenv",
-                ],
-            }
-        },
-    )
-
 setup(
     name="canonicalwebteam.dotrun",
     version="0.0.0",
@@ -38,9 +17,7 @@ setup(
         "termcolor",
         "virtualenv",
         "nodeenv",
+        "python-dotenv",
     ],
-    entry_points={
-        "console_scripts": ["idotrun = canonicalwebteam.dotrun:cli"]
-    },
-    **extra_options
+    entry_points={"console_scripts": ["dotrun = canonicalwebteam.dotrun:cli"]},
 )
