@@ -1,6 +1,3 @@
-#! /usr/bin/env python3
-
-# Core
 import sys
 from setuptools import setup
 
@@ -19,6 +16,7 @@ setup(
         "flake8",
         "termcolor",
         "virtualenv",
+        "nodeenv",
         "python-dotenv",
     ],
     entry_points={"console_scripts": ["dotrun = canonicalwebteam.dotrun:cli"]},

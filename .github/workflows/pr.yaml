@@ -2,61 +2,86 @@ name: PR
 on: [pull_request]
 
 jobs:
-  test-snap:
-    runs-on: ubuntu-18.04
-    name: Test snap
+  test-mac:
+    runs-on: macos-latest
+    name: Mac OS x86 build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Snapcraft with LXD
-        uses: samuelmeuli/action-snapcraft@v1
+      - uses: actions/setup-python@v2
         with:
-          use_lxd: true
+          python-version: '3.8'
 
-      - name: Build snap
-        run: sg lxd -c 'snapcraft --use-lxd'
+      - name: Install pyinstaller
+        run: pip3 install -U pyinstaller
 
-      - name: Install dotrun snap
+      - name: Build app
         run: |
-          sudo rm -rf /etc/docker
-          sudo snap install --dangerous dotrun_*.snap
-
-      - name: Run tests
-        run: |
-          pip3 install pexpect
-          export PATH=/snap/bin:$PATH
-          python3 -m unittest discover --verbose --start-directory tests
+          cd src/
+          pip3 install .
+          pyinstaller cli.py --onefile --name idotrun
 
       - uses: actions/upload-artifact@v2
         with:
-          name: dotrun-snap
-          path: dotrun_*.snap
+          name: idotrun
+          path: src/dist/idotrun
 
-  lint-python:
-    runs-on: ubuntu-latest
-    name: Lint python
+  # test-snap:
+  #   runs-on: ubuntu-18.04
+  #   name: Test snap
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-    steps:
-      - uses: actions/checkout@v2
+  #     - name: Install Snapcraft with LXD
+  #       uses: samuelmeuli/action-snapcraft@v1
+  #       with:
+  #         use_lxd: true
 
-      - name: Install system dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          sudo pip3 install flake8 black
-      - name: Lint Python
-        run: flake8 . && black --line-length 79 --check .
+  #     - name: Build snap
+  #       run: sg lxd -c 'snapcraft --use-lxd'
+
+  #     - name: Install dotrun snap
+  #       run: |
+  #         sudo rm -rf /etc/docker
+  #         sudo snap install --dangerous dotrun_*.snap
+
+  #     - name: Run tests
+  #       run: |
+  #         pip3 install pexpect
+  #         export PATH=/snap/bin:$PATH
+  #         python3 -m unittest discover --verbose --start-directory tests
+
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: dotrun-snap
+  #         path: dotrun_*.snap
+
+  # lint-python:
+  #   runs-on: ubuntu-latest
+  #   name: Lint python
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Install system dependencies
+  #       run: |
+  #         python3 -m pip install --upgrade pip
+  #         sudo pip3 install flake8 black
+  #     - name: Lint Python
+  #       run: flake8 . && black --line-length 79 --check .
         
-  check-inclusive-naming:
-    runs-on: ubuntu-latest
+  # check-inclusive-naming:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Check inclusive naming
-        uses: canonical-web-and-design/inclusive-naming@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          fail-on-error: true
+  #     - name: Check inclusive naming
+  #       uses: canonical-web-and-design/inclusive-naming@main
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         reporter: github-pr-review
+  #         fail-on-error: true

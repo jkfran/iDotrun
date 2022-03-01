@@ -141,3 +141,7 @@ def cli(args=None):
         )
         cli_parser.print_usage()
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli()
